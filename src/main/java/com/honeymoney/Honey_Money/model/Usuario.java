@@ -4,32 +4,60 @@ package com.honeymoney.Honey_Money.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.honeymoney.Honey_Money.util.BCryptHasher.BCryptHasher;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-@Entity
-@Table(name = "Usuarios")
+@Entity 
+@Table(name = "Usuario")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "El nombre no puede ser nulo")
+    @Size(min = 3, max = 50, message = "El nombre debe tener entre 3 y 50 caracteres")
+    @Column(name = "Name", nullable = false)
     private String name;
 
-    @Column(unique = true)
+    @NotNull(message = "El email no puede ser nulo")
+    @Email(message = "El email debe tener un formato válido")
+    @Column(name = "Email", unique = true, nullable = false)
     private String email;
 
+    @NotNull(message = "La contraseña no puede ser nula")
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+    @Column(name = "Password", nullable = false)
     private String password;
 
-    @Column(name = "saldo_actual")
+    @Column(name = "Saldo_Actual")
     private Double saldoActual = 0.0;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<Transaccion> transacciones;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // Marca esta relación como la parte gestionada
+    private List<CategoriaMovimiento> categorias;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ingresos> ingresos;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Salidas> salidas;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MovimientoDiario> movimientosDiarios;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GastoMensual> gastosMensuales;
 
     public void setPassword(String rawPassword) {
-        // Llamar a BCrypt para encriptar la contraseña
-        this.password = BCryptHasher.hashPassword(rawPassword);
+        if (rawPassword != null && !rawPassword.startsWith("$2a$")) { // Evitar re-encriptar
+            this.password = BCryptHasher.hashPassword(rawPassword);
+        } else {
+            this.password = rawPassword; // Asignar directamente si ya está encriptada
+        }
     }
 
     public Long getId() {
@@ -68,13 +96,43 @@ public class Usuario {
         this.saldoActual = saldoActual;
     }
 
-    public List<Transaccion> getTransacciones() {
-        return transacciones;
+    public List<CategoriaMovimiento> getCategorias() {
+        return categorias;
     }
 
-    public void setTransacciones(List<Transaccion> transacciones) {
-        this.transacciones = transacciones;
+    public void setCategorias(List<CategoriaMovimiento> categorias) {
+        this.categorias = categorias;
     }
 
-    
+    public List<Ingresos> getIngresos() {
+        return ingresos;
+    }
+
+    public void setIngresos(List<Ingresos> ingresos) {
+        this.ingresos = ingresos;
+    }
+
+    public List<Salidas> getSalidas() {
+        return salidas;
+    }
+
+    public void setSalidas(List<Salidas> salidas) {
+        this.salidas = salidas;
+    }
+
+    public List<MovimientoDiario> getMovimientosDiarios() {
+        return movimientosDiarios;
+    }
+
+    public void setMovimientosDiarios(List<MovimientoDiario> movimientosDiarios) {
+        this.movimientosDiarios = movimientosDiarios;
+    }
+
+    public List<GastoMensual> getGastosMensuales() {
+        return gastosMensuales;
+    }
+
+    public void setGastosMensuales(List<GastoMensual> gastosMensuales) {
+        this.gastosMensuales = gastosMensuales;
+    }
 }
