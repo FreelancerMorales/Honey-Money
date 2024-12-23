@@ -1,12 +1,8 @@
 package com.honeymoney.Honey_Money.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.honeymoney.Honey_Money.model.MovimientoDiario.TipoMovimiento;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,22 +11,22 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Categoria_Movimiento")
+@Table(name = "categoria_movimiento")
 public class CategoriaMovimiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Nombre", nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Tipo", nullable = false)
-    private TipoMovimiento tipo;
+    @ManyToOne
+    @JoinColumn(name = "tipo_movimiento_id", nullable = false)
+    private TipoMovimiento tipoMovimiento;
 
     @ManyToOne
-    @JoinColumn(name = "Usuario_ID", nullable = false)
-    @JsonBackReference // Marca esta relación como la referencia inversa
+    @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonBackReference
     private Usuario usuario;
 
     public Long getId() {
@@ -49,12 +45,12 @@ public class CategoriaMovimiento {
         this.nombre = nombre;
     }
 
-    public TipoMovimiento getTipo() {
-        return tipo;
+    public TipoMovimiento getTipoMovimiento() {
+        return tipoMovimiento;
     }
 
-    public void setTipo(TipoMovimiento tipo) {
-        this.tipo = tipo;
+    public void setTipoMovimiento(TipoMovimiento tipoMovimiento) {
+        this.tipoMovimiento = tipoMovimiento;
     }
 
     public Usuario getUsuario() {

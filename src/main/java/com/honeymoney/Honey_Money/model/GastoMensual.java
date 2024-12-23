@@ -15,33 +15,31 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "Gasto_Mensual")
+@Table(name = "gasto_mensual")
 public class GastoMensual {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "Usuario_ID", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Column(name = "Monto", nullable = false)
+    @Column(name = "monto", nullable = false)
     private BigDecimal monto;
 
-    @Column(name = "Descripcion")
     @NotNull(message = "La descripción no puede ser nula")
     @Size(min = 3, max = 255, message = "La descripción debe tener entre 3 y 255 caracteres")
+    @Column(name = "descripcion")
     private String descripcion;
 
-    @Column(name = "Fecha_Inicio", nullable = false)
+    @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
-    @Column(name = "Fecha_Fin")
-    
-    @NotNull(message = "La fecha no puede ser nula")
+    @Column(name = "fecha_fin", nullable = false)
     private LocalDate fechaFin;
 
-    @Column(name = "Activo", nullable = false)
+    @Column(name = "activo", nullable = false)
     private Boolean activo;
 
     public Long getId() {

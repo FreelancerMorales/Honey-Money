@@ -10,8 +10,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Entity 
-@Table(name = "Usuario")
+@Entity
+@Table(name = "usuario")
 public class Usuario {
 
     @Id
@@ -20,31 +20,28 @@ public class Usuario {
 
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 3, max = 50, message = "El nombre debe tener entre 3 y 50 caracteres")
-    @Column(name = "Name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @NotNull(message = "El email no puede ser nulo")
     @Email(message = "El email debe tener un formato válido")
-    @Column(name = "Email", unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @NotNull(message = "La contraseña no puede ser nula")
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
-    @Column(name = "Password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "Saldo_Actual")
+    @Column(name = "saldo_actual")
     private Double saldoActual = 0.0;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference // Marca esta relación como la parte gestionada
+    @JsonManagedReference
     private List<CategoriaMovimiento> categorias;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Ingresos> ingresos;
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Salidas> salidas;
+    private List<MovimientosFinancieros> movimientosFinancieros;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MovimientoDiario> movimientosDiarios;
@@ -104,20 +101,12 @@ public class Usuario {
         this.categorias = categorias;
     }
 
-    public List<Ingresos> getIngresos() {
-        return ingresos;
+    public List<MovimientosFinancieros> getMovimientosFinancieros() {
+        return movimientosFinancieros;
     }
 
-    public void setIngresos(List<Ingresos> ingresos) {
-        this.ingresos = ingresos;
-    }
-
-    public List<Salidas> getSalidas() {
-        return salidas;
-    }
-
-    public void setSalidas(List<Salidas> salidas) {
-        this.salidas = salidas;
+    public void setMovimientosFinancieros(List<MovimientosFinancieros> movimientosFinancieros) {
+        this.movimientosFinancieros = movimientosFinancieros;
     }
 
     public List<MovimientoDiario> getMovimientosDiarios() {

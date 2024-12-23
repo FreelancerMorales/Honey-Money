@@ -3,6 +3,7 @@ package com.honeymoney.Honey_Money.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.honeymoney.Honey_Money.model.CategoriaMovimiento;
-import com.honeymoney.Honey_Money.model.MovimientoDiario;
+import com.honeymoney.Honey_Money.model.TipoMovimiento;
 import com.honeymoney.Honey_Money.model.Usuario;
 import com.honeymoney.Honey_Money.model.DTO.CategoriaMovimientoDTO;
 import com.honeymoney.Honey_Money.repository.CategoriaMovimientoRepository;
+import com.honeymoney.Honey_Money.repository.TipoMovimientoRepository;
 import com.honeymoney.Honey_Money.repository.UsuarioRepository;
 
 import jakarta.validation.Valid;
@@ -30,8 +33,12 @@ public class CategoriaMovimientoController {
     private CategoriaMovimientoRepository categoriaMovimientoRepository;
 
     @Autowired
-    private UsuarioRepository UsuarioRepository;
+    private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private TipoMovimientoRepository tipoMovimientoRepository;
+
+    // Obtener todas las categorías
     @GetMapping
     public List<CategoriaMovimiento> obtenerTodasCategorias() {
         return categoriaMovimientoRepository.findAll();
@@ -43,38 +50,42 @@ public class CategoriaMovimientoController {
         return categoriaMovimientoRepository.findByUsuarioId(usuarioId);
     }
 
+    // Crear una nueva categoría
     @PostMapping
     public ResponseEntity<CategoriaMovimiento> crearCategoria(@Valid @RequestBody CategoriaMovimientoDTO categoriaDTO) {
+        // Validar usuario
+        Usuario usuario = usuarioRepository.findById(categoriaDTO.getUsuarioId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        // Validar que usuarioId no sea nulo
-        if (categoriaDTO.getUsuarioId() == null) {
-            throw new IllegalArgumentException("El ID del usuario no puede ser nulo");
-        }
+        // Validar tipo de movimiento
+        TipoMovimiento tipoMovimiento = tipoMovimientoRepository.findById(categoriaDTO.getTipoMovimientoId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipo de movimiento no encontrado"));
 
-        // Buscar el usuario asociado
-        Usuario usuario = UsuarioRepository.findById(categoriaDTO.getUsuarioId())
-        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-        // Crear y guardar la nueva categoría
+        // Crear y guardar la categoría
         CategoriaMovimiento categoria = new CategoriaMovimiento();
         categoria.setNombre(categoriaDTO.getNombre());
-        try {
-        categoria.setTipo(MovimientoDiario.TipoMovimiento.valueOf(categoriaDTO.getTipo().toUpperCase()));
-        } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("El tipo de movimiento debe ser 'Ingreso' o 'Egreso'");
-        }
+        categoria.setTipoMovimiento(tipoMovimiento);
         categoria.setUsuario(usuario);
 
-        return ResponseEntity.ok(categoriaMovimientoRepository.save(categoria));
+        CategoriaMovimiento categoriaGuardada = categoriaMovimientoRepository.save(categoria);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaGuardada);
     }
 
     // Actualizar una categoría
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaMovimiento> actualizarCategoria(@PathVariable Long id, @RequestBody CategoriaMovimiento detallesCategoria) {
+    public ResponseEntity<CategoriaMovimiento> actualizarCategoria(
+            @PathVariable Long id, 
+            @RequestBody CategoriaMovimientoDTO detallesCategoria) {
         return categoriaMovimientoRepository.findById(id)
                 .map(categoria -> {
                     categoria.setNombre(detallesCategoria.getNombre());
-                    categoria.setTipo(detallesCategoria.getTipo());
+
+                    if (detallesCategoria.getTipoMovimientoId() != null) {
+                        TipoMovimiento tipoMovimiento = tipoMovimientoRepository.findById(detallesCategoria.getTipoMovimientoId())
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipo de movimiento no encontrado"));
+                        categoria.setTipoMovimiento(tipoMovimiento);
+                    }
+
                     return ResponseEntity.ok(categoriaMovimientoRepository.save(categoria));
                 })
                 .orElse(ResponseEntity.notFound().build());
