@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "movimientos_financieros")
@@ -23,6 +24,7 @@ public class MovimientosFinancieros {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonBackReference
     private Usuario usuario;
 
     @ManyToOne
@@ -48,12 +50,17 @@ public class MovimientosFinancieros {
     @JoinColumn(name = "movimiento_diario_id") // Nombre de la columna en la base de datos
     private MovimientoDiario movimientoDiario;
 
-    public MovimientoDiario getMovimientoDiario() {
-        return movimientoDiario;
+    public MovimientosFinancieros() {
+        // Default constructor
     }
 
-    public void setMovimientoDiario(MovimientoDiario movimientoDiario) {
-        this.movimientoDiario = movimientoDiario;
+    public MovimientosFinancieros(Usuario usuario, CategoriaMovimiento categoria, TipoMovimiento tipoMovimiento, BigDecimal monto, String descripcion, LocalDate fecha) {
+        this.usuario = usuario;
+        this.categoria = categoria;
+        this.tipoMovimiento = tipoMovimiento;
+        this.monto = monto;
+        this.descripcion = descripcion;
+        this.fecha = fecha;
     }
 
     public Long getId() {
@@ -110,5 +117,13 @@ public class MovimientosFinancieros {
 
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public MovimientoDiario getMovimientoDiario() {
+        return movimientoDiario;
+    }
+
+    public void setMovimientoDiario(MovimientoDiario movimientoDiario) {
+        this.movimientoDiario = movimientoDiario;
     }
 }

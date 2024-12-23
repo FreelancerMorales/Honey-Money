@@ -4,6 +4,7 @@ package com.honeymoney.Honey_Money.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.honeymoney.Honey_Money.util.BCryptHasher.BCryptHasher;
 import jakarta.validation.constraints.Email;
@@ -40,6 +41,7 @@ public class Usuario {
     @JsonManagedReference
     private List<CategoriaMovimiento> categorias;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MovimientosFinancieros> movimientosFinancieros;
 

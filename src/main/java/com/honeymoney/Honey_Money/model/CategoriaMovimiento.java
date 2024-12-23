@@ -1,6 +1,7 @@
 package com.honeymoney.Honey_Money.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +25,7 @@ public class CategoriaMovimiento {
     @JoinColumn(name = "tipo_movimiento_id", nullable = false)
     private TipoMovimiento tipoMovimiento;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     @JsonBackReference
