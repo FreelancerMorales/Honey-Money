@@ -6,6 +6,7 @@ import com.honeymoney.Honey_Money.repository.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,14 +34,9 @@ public class UsuarioController {
 
     // Crear un nuevo usuario
     @PostMapping
-    public Usuario crearUsuario(@RequestBody Usuario usuario) {
-        // No encriptamos aquí; confiamos en que el modelo maneje la encriptación
+    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
-
-        System.out.println("Contraseña ingresada por el cliente: " + usuario.getPassword());
-        System.out.println("Contraseña encriptada almacenada: " + usuarioGuardado.getPassword());
-
-        return usuarioGuardado;
+        return ResponseEntity.ok(usuarioGuardado);
     }
 
     // Actualizar un usuario

@@ -3,6 +3,9 @@ package com.honeymoney.Honey_Money.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+
 @Entity
 @Table(name = "movimiento_diario")
 public class MovimientoDiario {
@@ -24,6 +28,7 @@ public class MovimientoDiario {
 
     @Column(name = "fecha", nullable = false)
     @NotNull(message = "La fecha no puede ser nula")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fecha;
 
     @Column(name = "total", nullable = false)
@@ -34,7 +39,12 @@ public class MovimientoDiario {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "movimientoDiario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "diario-movimientos")
     private List<MovimientosFinancieros> movimientosFinancieros;
+
+    @ManyToOne
+    @JoinColumn(name = "tipo_movimiento_id", nullable = false)
+    private TipoMovimiento tipoMovimiento;
 
     // Getters y Setters
 
@@ -76,5 +86,13 @@ public class MovimientoDiario {
 
     public void setMovimientosFinancieros(List<MovimientosFinancieros> movimientosFinancieros) {
         this.movimientosFinancieros = movimientosFinancieros;
+    }
+
+    public TipoMovimiento getTipoMovimiento() {
+        return tipoMovimiento;
+    }
+
+    public void setTipoMovimiento(TipoMovimiento tipoMovimiento) {
+        this.tipoMovimiento = tipoMovimiento;
     }
 }

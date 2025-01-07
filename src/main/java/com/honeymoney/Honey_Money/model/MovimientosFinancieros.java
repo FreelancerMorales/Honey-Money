@@ -24,7 +24,6 @@ public class MovimientosFinancieros {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    @JsonBackReference
     private Usuario usuario;
 
     @ManyToOne
@@ -48,6 +47,7 @@ public class MovimientosFinancieros {
 
     @ManyToOne
     @JoinColumn(name = "movimiento_diario_id") // Nombre de la columna en la base de datos
+    @JsonBackReference(value = "diario-movimientos")
     private MovimientoDiario movimientoDiario;
 
     public MovimientosFinancieros() {
