@@ -1,6 +1,7 @@
 package com.honeymoney.Honey_Money.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -33,7 +34,7 @@ public class MovimientoDiario {
 
     @OneToMany(mappedBy = "movimientoDiario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "diario-movimientos")
-    private List<MovimientosFinancieros> movimientosFinancieros;
+    private List<MovimientosFinancieros> movimientosFinancieros = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "tipo_movimiento_id", nullable = false)

@@ -21,14 +21,18 @@ public class MovimientoDiarioDTO {
     @NotEmpty(message = "Debe incluir al menos un movimiento financiero")
     private List<MovimientoFinancieroDTO> movimientosFinancieros = new ArrayList<>();
 
+    @NotNull(message = "El ID del tipo de movimiento no puede ser nulo")
+    private Long tipoMovimientoId;
+
     public MovimientoDiarioDTO() {
     }
 
-    public MovimientoDiarioDTO(LocalDate fecha, double total, List<MovimientoFinancieroDTO> movimientosFinancieros) {
+    public MovimientoDiarioDTO(LocalDate fecha, double total, List<MovimientoFinancieroDTO> movimientosFinancieros, Long tipoMovimientoId) {
         this.fecha = fecha;
         this.total = total;
         this.movimientosFinancieros = movimientosFinancieros != null ? 
             movimientosFinancieros : new ArrayList<>();
+        this.tipoMovimientoId = tipoMovimientoId;
     }
 
     @Override
@@ -37,7 +41,16 @@ public class MovimientoDiarioDTO {
             "fecha=" + fecha +
             ", total=" + total +
             ", movimientosFinancieros=" + movimientosFinancieros +
+            ", tipoMovimientoId=" + tipoMovimientoId +
             '}';
+    }
+
+    public Long getTipoMovimientoId() {
+        return tipoMovimientoId;
+    }
+
+    public void setTipoMovimientoId(Long tipoMovimientoId) {
+        this.tipoMovimientoId = tipoMovimientoId;
     }
 
     public LocalDate getFecha() {

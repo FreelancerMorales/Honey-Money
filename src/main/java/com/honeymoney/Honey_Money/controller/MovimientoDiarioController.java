@@ -65,6 +65,9 @@ public class MovimientoDiarioController {
         Usuario usuario = usuarioRepository.findById(usuarioId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
         movimiento.setUsuario(usuario);
+        
+        movimiento.setTipoMovimiento(tipoMovimientoRepository.findById(movimientoDTO.getTipoMovimientoId())
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipo de movimiento no encontrado")));
     
         // Validar y asociar movimientos financieros
         List<MovimientosFinancieros> movimientos = movimientoDTO.getMovimientosFinancieros().stream()
@@ -76,7 +79,7 @@ public class MovimientoDiarioController {
                 movimientoFinanciero.setUsuario(usuario);
                 movimientoFinanciero.setCategoria(categoriaRepository.findById(movimientoFinancieroDTO.getCategoriaId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada")));
-                    movimientoFinanciero.setTipoMovimiento(tipoMovimientoRepository.findById(movimientoFinancieroDTO.getTipoMovimientoId())
+                movimientoFinanciero.setTipoMovimiento(tipoMovimientoRepository.findById(movimientoFinancieroDTO.getTipoMovimientoId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipo de movimiento no encontrado")));
                 movimientoFinanciero.setMovimientoDiario(movimiento);
                 return movimientoFinanciero;
