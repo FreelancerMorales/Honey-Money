@@ -27,7 +27,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll() // Permitir acceso a rutas de autenticación
-                .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/usuarios/crear").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/test").permitAll()
                 .anyRequest().authenticated()              // Exigir autenticación para todas las demás rutas
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class); // Asegurar el filtro antes de otros filtros de autenticación

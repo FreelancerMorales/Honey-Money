@@ -4,16 +4,24 @@ import com.honeymoney.Honey_Money.model.CategoriaMovimiento;
 import com.honeymoney.Honey_Money.model.Usuario;
 import com.honeymoney.Honey_Money.repository.UsuarioRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -33,11 +41,19 @@ public class UsuarioController {
     }
 
     // Crear un nuevo usuario
-    @PostMapping
-    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
+    @PostMapping(path = "/crear", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario, HttpServletRequest request) {
+        logger.debug("Headers: {}", Collections.list(request.getHeaderNames()));
+        logger.debug("Request body: {}", usuario);
+        logger.info("Request body: {}", usuario);
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
         return ResponseEntity.ok(usuarioGuardado);
     }
+
+    // @PostMapping(path = "/crear", consumes = "application/json", produces = "application/json")
+    // public ResponseEntity<String> crearUsuario(@RequestBody Map<String, String> body) {
+    //     return ResponseEntity.ok("Datos recibidos: " + body.get("campo1"));
+    // }
 
     // Actualizar un usuario
     @PutMapping("/{id}")

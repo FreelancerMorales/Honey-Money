@@ -2,14 +2,14 @@
 package com.honeymoney.Honey_Money.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.honeymoney.Honey_Money.util.BCryptHasher.BCryptHasher;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "usuario")
@@ -38,14 +38,15 @@ public class Usuario {
     private Double saldoActual = 0.0;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference // Serializar las categorías
     private List<CategoriaMovimiento> categorias;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<MovimientosFinancieros> movimientosFinancieros;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "usuario-movimientosDiarios") // Serializar movimientos diarios
     private List<MovimientoDiario> movimientosDiarios;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)

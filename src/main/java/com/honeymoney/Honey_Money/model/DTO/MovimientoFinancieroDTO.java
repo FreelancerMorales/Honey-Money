@@ -35,6 +35,33 @@ public class MovimientoFinancieroDTO {
     @NotNull(message = "El ID del usuario no puede ser nulo")
     private Long usuarioId;
 
+    public MovimientoFinancieroDTO() {
+    }
+
+    public MovimientoFinancieroDTO(Long id, BigDecimal monto, String descripcion, 
+    LocalDate fecha, Long categoriaId, Long tipoMovimientoId, Long usuarioId) {
+        this.id = id;
+        this.monto = monto;
+        this.descripcion = descripcion;
+        this.fecha = fecha;
+        this.categoriaId = categoriaId;
+        this.tipoMovimientoId = tipoMovimientoId;
+        this.usuarioId = usuarioId;
+    }
+    
+    @Override
+    public String toString() {
+    return "MovimientoFinancieroDTO{" +
+        "id=" + id +
+        ", monto=" + monto +
+        ", descripcion='" + descripcion + '\'' +
+        ", fecha=" + fecha +
+        ", categoriaId=" + categoriaId +
+        ", tipoMovimientoId=" + tipoMovimientoId +
+        ", usuarioId=" + usuarioId +
+        '}';
+    }
+
     public Long getId() {
         return id;
     }
