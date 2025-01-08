@@ -97,15 +97,70 @@ public class MovimientoDiarioController {
     @PutMapping("/{id}")
     public ResponseEntity<MovimientoDiario> actualizarMovimientoDiario(
             @PathVariable Long id, 
-            @RequestBody MovimientoDiario detallesMovimiento) {
+            @Valid @RequestBody MovimientoDiarioDTO detallesMovimiento) {
         return movimientoDiarioRepository.findById(id)
                 .map(movimiento -> {
+                    // Validar que el tipo de movimiento no sea nulo
+                    if (detallesMovimiento.getTipoMovimientoId() == null) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                            "El tipo de movimiento no puede ser nulo");
+                    }
+            
+                    // Actualizar campos básicos
                     movimiento.setFecha(detallesMovimiento.getFecha());
                     movimiento.setTotal(detallesMovimiento.getTotal());
-                    movimiento.setMovimientosFinancieros(detallesMovimiento.getMovimientosFinancieros());
+
+                    // Actualizar tipo de movimiento
+                    movimiento.setTipoMovimiento(tipoMovimientoRepository
+                        .findById(detallesMovimiento.getTipoMovimientoId())
+                        .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "Tipo de movimiento no encontrado")));
+
+                    // Actualizar movimientos financieros
+                    if (detallesMovimiento.getMovimientosFinancieros() != null) {
+                        // Limpiar movimientos existentes
+                        movimiento.getMovimientosFinancieros().clear();
+
+                        // Agregar nuevos movimientos
+                        detallesMovimiento.getMovimientosFinancieros().forEach(dto -> {
+                            if (dto.getTipoMovimientoId() == null || dto.getCategoriaId() == null 
+                                || dto.getUsuarioId() == null) {
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                                    "Todos los IDs son requeridos para los movimientos financieros");
+                            }
+
+                            MovimientosFinancieros movFinanciero = new MovimientosFinancieros();
+                            movFinanciero.setMonto(dto.getMonto());
+                            movFinanciero.setDescripcion(dto.getDescripcion());
+                            movFinanciero.setFecha(dto.getFecha());
+                            movFinanciero.setMovimientoDiario(movimiento);
+
+                            // Establecer tipo de movimiento
+                            movFinanciero.setTipoMovimiento(tipoMovimientoRepository
+                                .findById(dto.getTipoMovimientoId())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                    HttpStatus.NOT_FOUND, "Tipo de movimiento no encontrado")));
+
+                            // Establecer categoría
+                            movFinanciero.setCategoria(categoriaRepository
+                                .findById(dto.getCategoriaId())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                    HttpStatus.NOT_FOUND, "Categoría no encontrada")));
+
+                            // Establecer usuario
+                            movFinanciero.setUsuario(usuarioRepository
+                                .findById(dto.getUsuarioId())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                    HttpStatus.NOT_FOUND, "Usuario no encontrado")));
+
+                            movimiento.getMovimientosFinancieros().add(movFinanciero);
+                        });
+                    }
+
                     return ResponseEntity.ok(movimientoDiarioRepository.save(movimiento));
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Movimiento diario no encontrado"));
     }
 
     // Eliminar un movimiento diario
