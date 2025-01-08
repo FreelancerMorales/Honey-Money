@@ -10,16 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
-
-    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -41,9 +36,6 @@ public class UsuarioController {
     // Crear un nuevo usuario
     @PostMapping(path = "/crear", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario, HttpServletRequest request) {
-        logger.debug("Headers: {}", Collections.list(request.getHeaderNames()));
-        logger.debug("Request body: {}", usuario);
-        logger.info("Request body: {}", usuario);
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
         return ResponseEntity.ok(usuarioGuardado);
     }
