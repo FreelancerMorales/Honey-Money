@@ -42,21 +42,25 @@ public class GastoMensualController {
     // Crear un nuevo gasto mensual
     @PostMapping
     public ResponseEntity<GastoMensual> crearGastoMensual(@Valid @RequestBody GastoMensualDTO gastoDTO) {
-        if (gastoDTO.getFechaInicio().isAfter(gastoDTO.getFechaFin())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de inicio debe ser menor a la fecha de fin");
-        }
         GastoMensual gasto = new GastoMensual();
         Usuario usuario = usuarioRepository.findById(gastoDTO.getUsuarioId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
+        // Validaciones de negocio
+        if (gastoDTO.getFechaInicio().isAfter(gastoDTO.getFechaFin())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        
+        // Configurar gasto
         gasto.setUsuario(usuario);
         gasto.setMonto(gastoDTO.getMonto());
         gasto.setDescripcion(gastoDTO.getDescripcion());
         gasto.setFechaInicio(gastoDTO.getFechaInicio());
         gasto.setFechaFin(gastoDTO.getFechaFin());
-        gasto.setActivo(gastoDTO.getActivo());
+        gasto.setActivo(true);
         
-        return ResponseEntity.status(HttpStatus.CREATED).body(gastoMensualRepository.save(gasto));
+        // Guardar y retornar
+        return ResponseEntity.ok(gastoMensualRepository.save(gasto));
     }
 
     // Actualizar un gasto mensual

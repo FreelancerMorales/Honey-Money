@@ -7,10 +7,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.honeymoney.Honey_Money.listener.MovimientoFinancieroListener;
 
 @Entity
 @Table(name = "movimientos_financieros")
+@EntityListeners(MovimientoFinancieroListener.class)
 public class MovimientosFinancieros {
+    
+    @Version
+    private Long version;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

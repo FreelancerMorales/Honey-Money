@@ -19,6 +19,11 @@ import com.honeymoney.Honey_Money.util.BCryptHasher.BCryptHasher;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
+    @Version
+    private Long version;
+    
+    @Column(name = "saldo_actual", nullable = false)
+    private Double saldoActual = 0.0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,9 +43,6 @@ public class Usuario {
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     @Column(name = "password", nullable = false)
     private String password;
-
-    @Column(name = "saldo_actual")
-    private Double saldoActual = 0.0;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // Serializar las categorías
