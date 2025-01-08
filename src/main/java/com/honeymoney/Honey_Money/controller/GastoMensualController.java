@@ -42,6 +42,9 @@ public class GastoMensualController {
     // Crear un nuevo gasto mensual
     @PostMapping
     public ResponseEntity<GastoMensual> crearGastoMensual(@Valid @RequestBody GastoMensualDTO gastoDTO) {
+        if (gastoDTO.getFechaInicio().isAfter(gastoDTO.getFechaFin())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de inicio debe ser menor a la fecha de fin");
+        }
         GastoMensual gasto = new GastoMensual();
         Usuario usuario = usuarioRepository.findById(gastoDTO.getUsuarioId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
@@ -61,6 +64,9 @@ public class GastoMensualController {
     public ResponseEntity<GastoMensual> actualizarGastoMensual(
         @PathVariable Long id, 
         @Valid @RequestBody GastoMensualDTO gastoDTO) {
+        if (gastoDTO.getFechaInicio().isAfter(gastoDTO.getFechaFin())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de inicio debe ser menor a la fecha de fin");
+        }
         return gastoMensualRepository.findById(id)
             .map(gasto -> {
                 if (gastoDTO.getUsuarioId() != null) {
