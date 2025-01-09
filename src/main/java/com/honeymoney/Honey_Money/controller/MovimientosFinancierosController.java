@@ -24,6 +24,7 @@ import com.honeymoney.Honey_Money.repository.CategoriaMovimientoRepository;
 import com.honeymoney.Honey_Money.repository.MovimientosFinancierosRepository;
 import com.honeymoney.Honey_Money.repository.TipoMovimientoRepository;
 import com.honeymoney.Honey_Money.repository.UsuarioRepository;
+import com.honeymoney.Honey_Money.service.MovimientoFinancieroService;
 
 @RestController
 @RequestMapping("/api/movimientos")
@@ -40,6 +41,9 @@ public class MovimientosFinancierosController {
 
     @Autowired
     private TipoMovimientoRepository tipoMovimientoRepository;
+
+    @Autowired
+    private MovimientoFinancieroService movimientoFinancieroService;
 
     // Obtener todos los movimientos financieros por usuario
     @GetMapping("/usuario/{usuarioId}")
@@ -75,7 +79,7 @@ public class MovimientosFinancierosController {
         movimiento.setTipoMovimiento(tipoMovimiento);
 
         // Guardar el movimiento
-        MovimientosFinancieros movimientoGuardado = movimientosFinancierosRepository.save(movimiento);
+        MovimientosFinancieros movimientoGuardado = movimientoFinancieroService.saveMovimiento(movimiento);
         return ResponseEntity.status(HttpStatus.CREATED).body(movimientoGuardado);
     }
 
@@ -102,18 +106,19 @@ public class MovimientosFinancierosController {
                         movimiento.setTipoMovimiento(tipoMovimiento);
                     }
 
-                    return ResponseEntity.ok(movimientosFinancierosRepository.save(movimiento));
+                    return ResponseEntity.ok(movimientoFinancieroService.saveMovimiento(movimiento));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // Eliminar un movimiento financiero
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarMovimiento(@PathVariable Long id) {
-        if (movimientosFinancierosRepository.existsById(id)) {
-            movimientosFinancierosRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<Object> eliminarMovimiento(@PathVariable Long id) {
+        return movimientosFinancierosRepository.findById(id)
+            .map(movimiento -> {
+                movimientoFinancieroService.deleteMovimiento(movimiento);
+                return ResponseEntity.noContent().build();
+            })
+            .orElse(ResponseEntity.notFound().build());
     }
 }
