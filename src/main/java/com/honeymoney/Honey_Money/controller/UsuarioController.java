@@ -7,8 +7,11 @@ import com.honeymoney.Honey_Money.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -50,11 +53,19 @@ public class UsuarioController {
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario detallesUsuario) {
         return usuarioRepository.findById(id)
                 .map(usuario -> {
+                    // Actualizar version
+                    if (detallesUsuario.getVersion() != null) usuario.setVersion(detallesUsuario.getVersion());
+                    
                     if (detallesUsuario.getName() != null) usuario.setName(detallesUsuario.getName());
                     if (detallesUsuario.getEmail() != null) usuario.setEmail(detallesUsuario.getEmail());
                     if (detallesUsuario.getPassword() != null) usuario.setPassword(detallesUsuario.getPassword());
                     if (detallesUsuario.getSaldoActual() != null) usuario.setSaldoActual(detallesUsuario.getSaldoActual());
-                    return ResponseEntity.ok(usuarioRepository.save(usuario));
+                    
+                    try {
+                        return ResponseEntity.ok(usuarioRepository.save(usuario));
+                    } catch (OptimisticLockingFailureException e) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Conflicto de versión");
+                    }
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

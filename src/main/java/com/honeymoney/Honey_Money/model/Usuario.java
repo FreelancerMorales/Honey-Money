@@ -67,6 +67,14 @@ public class Usuario {
         }
     }
 
+    public Long getVersion() {
+        return version;
+    }
+    
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     public Long getId() {
         return id;
     }
