@@ -1,6 +1,7 @@
 package com.honeymoney.Honey_Money.model;
-
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,27 @@ public class MovimientoDiario {
     @Column(nullable = false)
     private double total;
 
+    @Column(nullable = false)
+    private BigDecimal totalIngresos = BigDecimal.ZERO;
+    
+    @Column(nullable = false)
+    private BigDecimal totalGastos = BigDecimal.ZERO;
+    
+    @Column(nullable = false)
+    private BigDecimal saldoFinal = BigDecimal.ZERO;
+    
+    @Column(nullable = false)
+    private boolean cerrado = false;
+
+    @Column(name = "ultima_actualizacion")
+    private LocalDateTime ultimaActualizacion;
+
+    @Column(name = "cierre_temporal")
+    private boolean cierreTemporal = false;
+
+    @Column(name = "cierre_definitivo")
+    private boolean cierreDefinitivo = false;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     @JsonBackReference(value = "usuario-movimientosDiarios")
@@ -39,24 +61,56 @@ public class MovimientoDiario {
     @JsonManagedReference(value = "diario-movimientos")
     private List<MovimientosFinancieros> movimientosFinancieros = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_movimiento_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "tipo_movimiento_id", nullable = false)  // Restaurar nullable = false
     private TipoMovimiento tipoMovimiento;
+
+    // Constructor por defecto con inicialización segura
+    public MovimientoDiario() {
+        this.totalIngresos = BigDecimal.ZERO;
+        this.totalGastos = BigDecimal.ZERO;
+        this.saldoFinal = BigDecimal.ZERO;
+        this.cierreTemporal = true;
+        this.cierreDefinitivo = false;
+        this.ultimaActualizacion = LocalDateTime.now();
+        this.movimientosFinancieros = new ArrayList<>();
+        // No inicializar tipoMovimiento aquí, se hará en el servicio
+    }
 
     @PrePersist
     @PreUpdate
-    public void validarTotales() {
+    public void validarDatos() {
+        // Validar datos básicos
+        if (fecha == null) {
+            throw new IllegalStateException("La fecha es requerida");
+        }
+        if (usuario == null) {
+            throw new IllegalStateException("El usuario es requerido");
+        }
+
+        // Validar totales
         MovimientoDiarioValidator validator = new MovimientoDiarioValidator();
         if (!validator.validarTotales(this)) {
             throw new IllegalStateException("El total no coincide con la suma de movimientos");
         }
         validator.actualizarTotal(this);
+        
+        // Validar saldo
         validarSaldoSuficiente();
     }
 
     private void validarSaldoSuficiente() {
-        if (tipoMovimiento.getId() == 2L && total > usuario.getSaldoActual()) {
-            throw new IllegalStateException("Saldo insuficiente para realizar la operación");
+        if (tipoMovimiento == null) {
+            return; // Skip validation if no tipoMovimiento
+        }
+        
+        try {
+            if (tipoMovimiento.getId() == 2L && total > usuario.getSaldoActual()) {
+                throw new IllegalStateException("Saldo insuficiente para realizar la operación");
+            }
+        } catch (NullPointerException e) {
+            // Log error and continue
+            System.err.println("Error validando saldo: " + e.getMessage());
         }
     }
 
@@ -64,6 +118,70 @@ public class MovimientoDiario {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public BigDecimal getTotalIngresos() {
+        return totalIngresos;
+    }
+
+    public void setTotalIngresos(BigDecimal totalIngresos) {
+        this.totalIngresos = totalIngresos;
+    }
+
+    public BigDecimal getTotalGastos() {
+        return totalGastos;
+    }
+
+    public void setTotalGastos(BigDecimal totalGastos) {
+        this.totalGastos = totalGastos;
+    }
+
+    public BigDecimal getSaldoFinal() {
+        return saldoFinal;
+    }
+
+    public void setSaldoFinal(BigDecimal saldoFinal) {
+        this.saldoFinal = saldoFinal;
+    }
+
+    public boolean isCerrado() {
+        return cerrado;
+    }
+
+    public void setCerrado(boolean cerrado) {
+        this.cerrado = cerrado;
+    }
+
+    public boolean isCierreTemporal() {
+        return cierreTemporal;
+    }
+
+    public void setCierreTemporal(boolean cierreTemporal) {
+        this.cierreTemporal = cierreTemporal;
+    }
+
+    public boolean isCierreDefinitivo() {
+        return cierreDefinitivo;
+    }
+
+    public void setCierreDefinitivo(boolean cierreDefinitivo) {
+        this.cierreDefinitivo = cierreDefinitivo;
+    }
+
+    public LocalDateTime getUltimaActualizacion() {
+        return ultimaActualizacion;
+    }
+
+    public void setUltimaActualizacion(LocalDateTime ultimaActualizacion) {
+        this.ultimaActualizacion = ultimaActualizacion;
     }
 
     public void setId(Long id) {
@@ -107,6 +225,9 @@ public class MovimientoDiario {
     }
 
     public void setTipoMovimiento(TipoMovimiento tipoMovimiento) {
+        if (tipoMovimiento != null && tipoMovimiento.getId() == null) {
+            throw new IllegalArgumentException("TipoMovimiento debe tener un ID válido");
+        }
         this.tipoMovimiento = tipoMovimiento;
     }
 }

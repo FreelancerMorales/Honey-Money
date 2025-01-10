@@ -14,6 +14,8 @@ public class MovimientoFinancieroDTO {
 
     private Long id;
 
+    private Long movimientoDiarioId;
+
     @NotNull(message = "El monto no puede ser nulo")
     @DecimalMin(value = "0.01", inclusive = true, message = "El monto debe ser mayor a 0")
     private BigDecimal monto;
@@ -38,13 +40,17 @@ public class MovimientoFinancieroDTO {
     public MovimientoFinancieroDTO() {
     }
 
-    public MovimientoFinancieroDTO(Long id, BigDecimal monto, String descripcion, 
-    LocalDate fecha, Long categoriaId, Long tipoMovimientoId, Long usuarioId) {
+    public MovimientoFinancieroDTO(Long id, Long movimientoDiarioId, BigDecimal monto, String descripcion, LocalDate fecha, Long categoriaId, Long tipoMovimientoId, Long usuarioId) {
         this.id = id;
+        this.movimientoDiarioId = movimientoDiarioId;
         this.monto = monto;
         this.descripcion = descripcion;
         this.fecha = fecha;
         this.categoriaId = categoriaId;
+        // Logs para depuración
+        System.out.println("");
+        System.out.println("- Diario - TipoMovimiento loaded: " + tipoMovimientoId);
+        System.out.println("");
         this.tipoMovimientoId = tipoMovimientoId;
         this.usuarioId = usuarioId;
     }
@@ -53,6 +59,7 @@ public class MovimientoFinancieroDTO {
     public String toString() {
     return "MovimientoFinancieroDTO{" +
         "id=" + id +
+        ", movimientoDiarioId=" + movimientoDiarioId +
         ", monto=" + monto +
         ", descripcion='" + descripcion + '\'' +
         ", fecha=" + fecha +
@@ -60,6 +67,14 @@ public class MovimientoFinancieroDTO {
         ", tipoMovimientoId=" + tipoMovimientoId +
         ", usuarioId=" + usuarioId +
         '}';
+    }
+
+    public Long getMovimientoDiarioId() {
+        return movimientoDiarioId;
+    }
+
+    public void setMovimientoDiarioId(Long movimientoDiarioId) {
+        this.movimientoDiarioId = movimientoDiarioId;
     }
 
     public Long getId() {
@@ -103,10 +118,18 @@ public class MovimientoFinancieroDTO {
     }
 
     public Long getTipoMovimientoId() {
+        // Logs para depuración
+        System.out.println("");
+        System.out.println("- Get OF FINANCIERO - TipoMovimiento loaded: " + tipoMovimientoId);
+        System.out.println();
+        System.out.println();
         return tipoMovimientoId;
     }
 
     public void setTipoMovimientoId(Long tipoMovimientoId) {
+        // Logs para depuración
+        System.out.println("");
+        System.out.println("- Set OF FINANCIERO - TipoMovimiento loaded: " + tipoMovimientoId);
         this.tipoMovimientoId = tipoMovimientoId;
     }
 

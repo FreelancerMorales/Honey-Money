@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final String SECRET_KEY = "TuClaveSecretaDe32CaracteresExactos!"; // Cambia por una clave segura
-    private static final long EXPIRATION_TIME = 86400000; // 1 día en milisegundos
+    private static final long EXPIRATION_TIME = 172800000; // 2 días en milisegundos
 
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 

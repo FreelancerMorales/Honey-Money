@@ -27,9 +27,12 @@ public class MovimientosFinancieros {
     @JoinColumn(name = "categoria_id", nullable = false)
     private CategoriaMovimiento categoria;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tipo_movimiento_id", nullable = false)
     private TipoMovimiento tipoMovimiento;
+
+    @Transient
+    private Long tipoMovimientoId;
 
     @Column(name = "monto", nullable = false)
     private BigDecimal monto;
@@ -85,10 +88,17 @@ public class MovimientosFinancieros {
     }
 
     public TipoMovimiento getTipoMovimiento() {
-        return tipoMovimiento;
+        return this.tipoMovimiento;
     }
 
     public void setTipoMovimiento(TipoMovimiento tipoMovimiento) {
+        if (tipoMovimiento == null) {
+            throw new IllegalArgumentException("TipoMovimiento cannot be null");
+        }
+        // Ensure we have a valid ID
+        if (tipoMovimiento.getId() == null) {
+            throw new IllegalArgumentException("TipoMovimiento must have an ID");
+        }
         this.tipoMovimiento = tipoMovimiento;
     }
 

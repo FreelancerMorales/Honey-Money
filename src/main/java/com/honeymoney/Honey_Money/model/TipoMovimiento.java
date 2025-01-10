@@ -12,11 +12,24 @@ public class TipoMovimiento {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
+    // Agregar constructor de copia
+    public TipoMovimiento copy() {
+        TipoMovimiento copy = new TipoMovimiento();
+        copy.setId(this.id);
+        copy.setNombre(this.nombre);
+        return copy;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
+        System.out.println("ID original: " + id);
+        if (id == null) {
+            System.out.println("ID nulo");
+            System.out.println("ID original: " + id);
+        }
         this.id = id;
     }
 
