@@ -38,10 +38,6 @@ public class MovimientoFinancieroService {
 
     @Transactional
     public MovimientosFinancieros saveMovimiento(MovimientoFinancieroDTO movimientoDTO) {
-
-        // Add logging
-        System.out.println("Processing DTO: " + movimientoDTO);
-
         // Validar DTO
         validarMovimientoDTO(movimientoDTO);
 
@@ -67,12 +63,6 @@ public class MovimientoFinancieroService {
             throw new IllegalStateException("TipoMovimiento no puede ser null después de recuperarlo");
         }
         movimiento.setTipoMovimiento(tipoMovimiento);
-        // Log adicional para verificar el estado de tipoMovimiento
-        System.out.println();
-        System.out.println("Tipo de movimiento recuperado: " + tipoMovimiento);
-        System.out.println();
-        System.out.println("TipoMovimiento set: " + tipoMovimiento.getId());
-        System.out.println();
 
         // Buscar y setear Categoría
         CategoriaMovimiento categoria = categoriaMovimientoRepository.findById(movimientoDTO.getCategoriaId())
@@ -84,11 +74,6 @@ public class MovimientoFinancieroService {
         
         // Guardar movimiento
         MovimientosFinancieros saved = movimientoRepository.save(movimiento);
-        System.out.println("Movimiento guardado con ID: " + saved.getId());
-        System.out.println();
-        System.out.println("Tipo de movimiento guardado: " + saved.getTipoMovimiento());
-        System.out.println();
-        System.out.println("ID de tipoMovimiento guardado: " + saved.getTipoMovimiento().getId());
         
         // Actualizar saldo del usuario
         actualizarSaldo(saved, true);
@@ -112,9 +97,6 @@ public class MovimientoFinancieroService {
         movimientoRepository.delete(movimiento);
         
         // Re-calcular movimiento diario
-        // Log depuración para verificar el estado de tipoMovimiento
-        System.out.println("TipoMovimiento antes de eliminar: " + movimiento.getTipoMovimiento().getId());
-        System.out.println();
         movimientoDiarioService.actualizarTotalesDiarios(
             movimiento.getUsuario().getId(), 
             movimiento.getFecha()
@@ -125,11 +107,6 @@ public class MovimientoFinancieroService {
         if (movimiento == null || movimiento.getUsuario() == null || movimiento.getFecha() == null) {
             throw new IllegalArgumentException("Datos insuficientes para actualizar movimiento diario");
         }
-        // Log adicional para verificar el estado de tipoMovimiento
-        System.out.println();
-        System.out.println("TipoMovimiento: " + movimiento.getTipoMovimiento().getId());
-        System.out.println("ID de tipoMovimiento: " + movimiento.getTipoMovimiento().getId());
-        System.out.println();
         movimientoDiarioService.actualizarTotalesDiarios(
             movimiento.getUsuario().getId(), 
             movimiento.getFecha()
@@ -150,13 +127,6 @@ public class MovimientoFinancieroService {
         if (monto == null) {
             throw new IllegalArgumentException("El monto no puede ser null");
         }
-        
-        System.out.println();
-        // Log adicional para verificar el estado de tipoMovimiento
-        System.out.println("Verificando tipoMovimiento antes de actualizar saldo: " + movimiento.getTipoMovimiento());
-        System.out.println("ID de tipoMovimiento: " + movimiento.getTipoMovimiento().getId());
-        System.out.println("ID de tipoMovimiento en el objeto: " + movimiento.getTipoMovimiento().getId());
-        System.out.println( );
 
         // Si es gasto (ID 2), el monto se vuelve negativo
         if (movimiento.getTipoMovimiento().getId() == 2L) {

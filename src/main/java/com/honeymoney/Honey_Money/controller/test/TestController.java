@@ -21,7 +21,6 @@ public class TestController {
 
     @PostMapping
     public ResponseEntity<Map<String, String>> postTest(@RequestBody Map<String, String> payload) {
-        System.out.println("Payload recibido: " + payload);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Datos procesados");
         return ResponseEntity.ok(response);

@@ -47,10 +47,6 @@ public class MovimientoFinancieroDTO {
         this.descripcion = descripcion;
         this.fecha = fecha;
         this.categoriaId = categoriaId;
-        // Logs para depuración
-        System.out.println("");
-        System.out.println("- Diario - TipoMovimiento loaded: " + tipoMovimientoId);
-        System.out.println("");
         this.tipoMovimientoId = tipoMovimientoId;
         this.usuarioId = usuarioId;
     }
@@ -118,18 +114,10 @@ public class MovimientoFinancieroDTO {
     }
 
     public Long getTipoMovimientoId() {
-        // Logs para depuración
-        System.out.println("");
-        System.out.println("- Get OF FINANCIERO - TipoMovimiento loaded: " + tipoMovimientoId);
-        System.out.println();
-        System.out.println();
         return tipoMovimientoId;
     }
 
     public void setTipoMovimientoId(Long tipoMovimientoId) {
-        // Logs para depuración
-        System.out.println("");
-        System.out.println("- Set OF FINANCIERO - TipoMovimiento loaded: " + tipoMovimientoId);
         this.tipoMovimientoId = tipoMovimientoId;
     }
 

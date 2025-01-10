@@ -105,9 +105,6 @@ public class MovimientoDiarioService {
         if (nuevo.getTipoMovimiento() == null) {
             throw new IllegalStateException("TipoMovimiento no puede ser null");
         }
-
-        System.out.println("Creando MovimientoDiario con TipoMovimiento: " + nuevo.getTipoMovimiento().getId());
-
         // Guardar y verificar
         MovimientoDiario saved = movimientoDiarioRepository.save(nuevo);
         if (saved == null || saved.getId() == null) {
@@ -156,95 +153,25 @@ public class MovimientoDiarioService {
             m.getTipoMovimiento().getId();
         });
 
-        System.out.println("\n=== INICIO actualizarTotales ===");
-        System.out.println("MovimientoDiario ID: " + movimientoDiario.getId());
-        System.out.println("Cantidad de movimientos: " + movimientos.size());
-
-        // Verificar estado de cada movimiento antes de procesar
-        System.out.println("\n=== Estado de movimientos antes de procesar ===");
-        movimientos.forEach(m -> {
-            System.out.println("\nVerificando movimiento ID: " + m.getId());
-            System.out.println("Objeto movimiento: " + m);
-            System.out.println("TipoMovimiento reference: " + System.identityHashCode(m.getTipoMovimiento()));
-            if (m.getTipoMovimiento() != null) {
-                System.out.println("TipoMovimiento ID: " + m.getTipoMovimiento().getId());
-            } else {
-                System.out.println("WARN: TipoMovimiento es NULL");
-            }
-        });
-        
-        System.out.println();
-        System.out.println("=== Calculando Ingresos ===");
         totalIngresos = movimientos.stream()
             .filter(m -> {
                 boolean isIngreso = m.getTipoMovimiento() != null && m.getTipoMovimiento().getId() == 1L;
-                System.out.println("Movimiento ID: " + m.getId() + 
-                                 " - TipoMovimiento: " + (m.getTipoMovimiento() != null ? 
-                                 m.getTipoMovimiento().getId() : "NULL") +
-                                 " - Es ingreso: " + isIngreso);
                 return isIngreso;
             })
             .map(MovimientosFinancieros::getMonto)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-        
-        // Verificar estado después de calcular ingresos
-        System.out.println("\n=== Estado después de calcular ingresos ===");
-        movimientos.forEach(m -> {
-            System.out.println("\nVerificando movimiento ID: " + m.getId());
-            System.out.println("TipoMovimiento reference: " + System.identityHashCode(m.getTipoMovimiento()));
-            if (m.getTipoMovimiento() != null) {
-                System.out.println("TipoMovimiento ID: " + m.getTipoMovimiento().getId());
-            } else {
-                System.out.println("WARN: TipoMovimiento es NULL");
-            }
-        });
 
-        System.out.println();
-        System.out.println("=== Calculando Gastos ===");
         totalGastos = movimientos.stream()
             .filter(m -> {
                 boolean isGasto = m.getTipoMovimiento() != null && m.getTipoMovimiento().getId() == 2L;
-                System.out.println("Movimiento ID: " + m.getId() + 
-                                 " - TipoMovimiento: " + (m.getTipoMovimiento() != null ? 
-                                 m.getTipoMovimiento().getId() : "NULL") +
-                                 " - Es gasto: " + isGasto);
                 return isGasto;
             })
             .map(MovimientosFinancieros::getMonto)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-            
-        System.out.println();
-        System.out.println("Total Ingresos: " + totalIngresos);
-        System.out.println("Total Gastos: " + totalGastos);
         
         movimientoDiario.setTotalIngresos(totalIngresos);
         movimientoDiario.setTotalGastos(totalGastos);
         movimientoDiario.setSaldoFinal(totalIngresos.subtract(totalGastos));
         movimientoDiario.setUltimaActualizacion(LocalDateTime.now());
-
-        // Verificar estado final
-        System.out.println("\n=== Estado final de movimientos ===");
-        movimientos.forEach(m -> {
-            System.out.println("\nVerificando movimiento ID: " + m.getId());
-            System.out.println("TipoMovimiento reference: " + System.identityHashCode(m.getTipoMovimiento()));
-            if (m.getTipoMovimiento() != null) {
-                System.out.println("TipoMovimiento ID: " + m.getTipoMovimiento().getId());
-            } else {
-                System.out.println("WARN: TipoMovimiento es NULL");
-            }
-        });
-
-        System.out.println("\n=== Estado Final de TipoMovimiento en Movimientos ===");
-        movimientos.forEach(m -> {
-            System.out.println("\nMovimiento ID: " + m.getId());
-            System.out.println("TipoMovimiento final: " + 
-                (m.getTipoMovimiento() != null ? 
-                "ID: " + m.getTipoMovimiento().getId() + 
-                ", Nombre: " + m.getTipoMovimiento().getNombre() : 
-                "NULL"));
-        });
-        
-        System.out.println("=== FIN actualizarTotales ===");
-        System.out.println();
     }
 }

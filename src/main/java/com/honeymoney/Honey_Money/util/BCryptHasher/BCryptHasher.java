@@ -14,7 +14,6 @@ public class BCryptHasher {
     // Método para verificar contraseñas
     public static boolean checkPassword(String rawPassword, String hashedPassword) {
         boolean result = encoder.matches(rawPassword, hashedPassword);
-        System.out.println("Resultado de la comparación: " + result);
         return result;
     }
 }

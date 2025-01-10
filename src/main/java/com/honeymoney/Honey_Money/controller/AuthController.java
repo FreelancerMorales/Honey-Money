@@ -35,9 +35,6 @@ public class AuthController {
 
         // Verificar la contraseña
         if (!BCryptHasher.checkPassword(password, usuario.getPassword())) {
-            System.out.println("Contraseña ingresada: " + password);
-            System.out.println("Contraseña almacenada: " + usuario.getPassword());
-            System.out.println("Resultado de comparación: " + BCryptHasher.checkPassword(password, usuario.getPassword()));
             return ResponseEntity.status(401).body("Contraseña incorrecta");
         }
         

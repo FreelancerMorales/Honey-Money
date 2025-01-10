@@ -25,11 +25,6 @@ public class TipoMovimiento {
     }
 
     public void setId(Long id) {
-        System.out.println("ID original: " + id);
-        if (id == null) {
-            System.out.println("ID nulo");
-            System.out.println("ID original: " + id);
-        }
         this.id = id;
     }
 
