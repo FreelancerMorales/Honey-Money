@@ -147,13 +147,14 @@ public class MovimientoFinancieroService {
         if (dto == null) {
             throw new IllegalArgumentException("El DTO no puede ser null");
         }
-        // Fix BigDecimal comparison
+        // Validar monto positivo
         if (dto.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El monto debe ser mayor a 0");
         }
         if (dto.getFecha() == null) {
             throw new IllegalArgumentException("La fecha es requerida");
         }
+        // Validar que la fecha no sea futura
         if (dto.getFecha().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("No se pueden registrar movimientos futuros");
         }
@@ -172,8 +173,16 @@ public class MovimientoFinancieroService {
         if (movimiento.getMonto() == null) {
             throw new IllegalArgumentException("El monto es requerido");
         }
+        // Validar monto positivo
+        if (movimiento.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor a 0");
+        }
         if (movimiento.getFecha() == null) {
             throw new IllegalArgumentException("La fecha es requerida");
+        }
+        // Validar que la fecha no sea futura
+        if (movimiento.getFecha().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("No se pueden registrar movimientos futuros");
         }
         if (movimiento.getCategoria() == null) {
             throw new IllegalArgumentException("La categoría es requerida");
